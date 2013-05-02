@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.youxiachai.util;
+package com.youxiachai.onexlistview.util;
 
 
 public class StringMatcher {

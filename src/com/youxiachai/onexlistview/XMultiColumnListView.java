@@ -1,6 +1,5 @@
-package com.youxiachai.xlistview;
+package com.youxiachai.onexlistview;
 
-import com.youxiachai.onexlistview.R;
 import me.maxwin.view.IXListViewListener;
 import me.maxwin.view.OnXScrollListener;
 import me.maxwin.view.XListViewFooter;
@@ -22,7 +21,7 @@ import com.huewu.pla.lib.internal.PLA_AbsListView.OnScrollListener;
 
 /**
  * @author youxiachai
- * @date   2013-5-3
+ * @date 2013-5-3
  */
 public class XMultiColumnListView extends MultiColumnListView implements
 		OnScrollListener {
@@ -135,13 +134,17 @@ public class XMultiColumnListView extends MultiColumnListView implements
 	}
 
 	protected void startLoadMore() {
-		mPullLoading = true;
-		mFooterView.setState(XListViewFooter.STATE_LOADING);
-		if (mListViewListener != null) {
-			mListViewListener.onLoadMore();
+		if (mEnablePullLoad
+				&& mFooterView.getBottomMargin() > PULL_LOAD_MORE_DELTA
+				&& !mPullLoading) {
+			mPullLoading = true;
+			mFooterView.setState(XListViewFooter.STATE_LOADING);
+			if (mListViewListener != null) {
+				mListViewListener.onLoadMore();
+			}
 		}
 	}
-	
+
 	protected void resetFooterHeight() {
 		int bottomMargin = mFooterView.getBottomMargin();
 		if (bottomMargin > 0) {
@@ -172,8 +175,8 @@ public class XMultiColumnListView extends MultiColumnListView implements
 		super.onLayout(changed, l, t, r, b);
 		// make sure XListViewFooter is the last footer view, and only add once.
 		if (mIsFooterReady == false) {
-			//if not inflate screen ,footerview not add
-			if(getLastVisiblePosition() != (getAdapter().getCount() - 1)){
+			// if not inflate screen ,footerview not add
+			if (getLastVisiblePosition() != (getAdapter().getCount() - 1)) {
 				mIsFooterReady = true;
 				addFooterView(mFooterView);
 			}
@@ -260,6 +263,7 @@ public class XMultiColumnListView extends MultiColumnListView implements
 			resetHeaderHeight();
 		}
 	}
+
 	/**
 	 * stop load more, reset footer view.
 	 */
@@ -289,7 +293,7 @@ public class XMultiColumnListView extends MultiColumnListView implements
 		if (mLastY == -1) {
 			mLastY = ev.getRawY();
 		}
-	
+
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			mLastY = ev.getRawY();
@@ -301,12 +305,13 @@ public class XMultiColumnListView extends MultiColumnListView implements
 					+ getFirstVisiblePosition() + "getVisiableHeight()"
 					+ mHeaderView.getVisiableHeight() + "deltaY->" + deltaY);
 			if (getFirstVisiblePosition() == 0
-					&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)) {
+					&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)  && !mPullRefreshing) {
 				// the first item is showing, header has shown or pull down.
+				
 				updateHeaderHeight(deltaY / OFFSET_RADIO);
 				invokeOnScrolling();
 			} else if (getLastVisiblePosition() == mTotalItemCount - 1
-					&& (mFooterView.getBottomMargin() > 0 || deltaY < 0)) {
+					&& (mFooterView.getBottomMargin() > 0 || deltaY < 0)  && !mPullLoading) {
 				// last item, already pulled up or want to pull up.
 				updateFooterHeight(-deltaY / OFFSET_RADIO);
 			}
@@ -315,26 +320,29 @@ public class XMultiColumnListView extends MultiColumnListView implements
 			mLastY = -1; // reset
 			if (getFirstVisiblePosition() == 0) {
 				// invoke refresh
-				if (mEnablePullRefresh
-						&& mHeaderView.getVisiableHeight() > mHeaderViewHeight) {
-					mPullRefreshing = true;
-					mHeaderView.setState(XListViewHeader.STATE_REFRESHING);
-					if (mListViewListener != null) {
-						mListViewListener.onRefresh();
-					}
-				}
+				startOnRefresh();
 				resetHeaderHeight();
 			} else if (getLastVisiblePosition() == mTotalItemCount - 1) {
 				// invoke load more.
-				if (mEnablePullLoad
-						&& mFooterView.getBottomMargin() > PULL_LOAD_MORE_DELTA) {
-					startLoadMore();
-				}
+
+				startLoadMore();
 				resetFooterHeight();
 			}
 			break;
 		}
 		return super.onTouchEvent(ev);
+	}
+
+	protected void startOnRefresh() {
+		if (mEnablePullRefresh
+				&& mHeaderView.getVisiableHeight() > mHeaderViewHeight
+				&& !mPullRefreshing) {
+			mPullRefreshing = true;
+			mHeaderView.setState(XListViewHeader.STATE_REFRESHING);
+			if (mListViewListener != null) {
+				mListViewListener.onRefresh();
+			}
+		}
 	}
 
 	@Override

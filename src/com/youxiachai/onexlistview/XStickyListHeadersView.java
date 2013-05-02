@@ -1,4 +1,4 @@
-package com.youxiachai.xlistview;
+package com.youxiachai.onexlistview;
 
 import java.util.ArrayList;
 
@@ -41,7 +41,6 @@ import android.widget.SectionIndexer;
 @SuppressLint("NewApi")
 public class XStickyListHeadersView extends XListView implements
 		OnScrollListener, OnClickListener {
-
 
 	private OnScrollListener scrollListener;
 	private boolean areHeadersSticky = true;
@@ -116,8 +115,8 @@ public class XStickyListHeadersView extends XListView implements
 				defStyle, 0);
 		drawSelectorOnTop = a.getBoolean(0, false);
 		a.recycle();
-		
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			setMultiChoiceModeListenerWrapper();
 		}
 	}
@@ -133,7 +132,7 @@ public class XStickyListHeadersView extends XListView implements
 
 			int visibility = getVisibility();
 			setVisibility(View.VISIBLE);
-			
+
 			frame = new StickyListHeadersListViewWrapper(getContext());
 			frame.setSelector(getSelector());
 			frame.setDrawSelectorOnTop(drawSelectorOnTop);
@@ -146,10 +145,9 @@ public class XStickyListHeadersView extends XListView implements
 			}
 
 			ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-					LayoutParams.MATCH_PARENT,
-					LayoutParams.MATCH_PARENT);
+					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 			setLayoutParams(params);
-			
+
 			frame.addView(this);
 			frame.setBackgroundDrawable(getBackground());
 			super.setBackgroundDrawable(null);
@@ -238,10 +236,10 @@ public class XStickyListHeadersView extends XListView implements
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
-        if (this.isInEditMode()) {
-            super.setAdapter(adapter);
-            return;
-        }
+		if (this.isInEditMode()) {
+			super.setAdapter(adapter);
+			return;
+		}
 
 		if (!clipToPaddingHasBeenSet) {
 			clippingToPadding = true;
@@ -252,7 +250,8 @@ public class XStickyListHeadersView extends XListView implements
 		}
 
 		if (this.adapter != null) {
-			this.adapter.unregisterInternalDataSetObserver(dataSetChangedObserver);
+			this.adapter
+					.unregisterInternalDataSetObserver(dataSetChangedObserver);
 			this.adapter = null;
 		}
 
@@ -266,24 +265,26 @@ public class XStickyListHeadersView extends XListView implements
 			}
 			this.adapter.setDivider(divider);
 			this.adapter.setDividerHeight(dividerHeight);
-			this.adapter.registerInternalDataSetObserver(dataSetChangedObserver);
-			
-			setSelectionFromTop(positionToSetWhenAdapterIsReady,offsetToSetWhenAdapterIsReady);
+			this.adapter
+					.registerInternalDataSetObserver(dataSetChangedObserver);
+
+			setSelectionFromTop(positionToSetWhenAdapterIsReady,
+					offsetToSetWhenAdapterIsReady);
 		}
 
 		currentHeaderId = null;
-		if(frame != null){
+		if (frame != null) {
 			frame.removeHeader();
 		}
 		updateHeaderVisibilities();
 		invalidate();
-		
+
 		super.setAdapter(this.adapter);
 	}
-	
+
 	@Override
 	public void setVisibility(int visibility) {
-		if(frame != null){
+		if (frame != null) {
 			frame.setVisibility(visibility);
 		}
 		super.setVisibility(visibility);
@@ -303,7 +304,8 @@ public class XStickyListHeadersView extends XListView implements
 
 				@Override
 				public void run() {
-					scrollChanged(XStickyListHeadersView.super.getFirstVisiblePosition());
+					scrollChanged(XStickyListHeadersView.super
+							.getFirstVisiblePosition());
 				}
 			});
 		}
@@ -539,11 +541,8 @@ public class XStickyListHeadersView extends XListView implements
 			boolean drawingListUnderStickyHeader) {
 		this.drawingListUnderStickyHeader = drawingListUnderStickyHeader;
 	}
-	
-	
-	/* METHODS THAT NEED POSITION TRANSLATING! */
-	
 
+	/* METHODS THAT NEED POSITION TRANSLATING! */
 
 	private void setMultiChoiceModeListenerWrapper() {
 		multiChoiceModeListenerWrapper = new MultiChoiceModeListener() {
@@ -556,23 +555,23 @@ public class XStickyListHeadersView extends XListView implements
 				}
 				return false;
 			}
-	
+
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
 				if (multiChoiceModeListenerDelegate != null) {
 					multiChoiceModeListenerDelegate.onDestroyActionMode(mode);
 				}
 			}
-	
+
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 				if (multiChoiceModeListenerDelegate != null) {
-					return multiChoiceModeListenerDelegate.onCreateActionMode(mode,
-							menu);
+					return multiChoiceModeListenerDelegate.onCreateActionMode(
+							mode, menu);
 				}
 				return false;
 			}
-	
+
 			@Override
 			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 				if (multiChoiceModeListenerDelegate != null) {
@@ -581,18 +580,19 @@ public class XStickyListHeadersView extends XListView implements
 				}
 				return false;
 			}
-	
+
 			@Override
-			public void onItemCheckedStateChanged(ActionMode mode, int position,
-					long id, boolean checked) {
+			public void onItemCheckedStateChanged(ActionMode mode,
+					int position, long id, boolean checked) {
 				if (multiChoiceModeListenerDelegate != null) {
 					position = adapter.translateListViewPosition(position);
-					multiChoiceModeListenerDelegate.onItemCheckedStateChanged(mode,
-							position, id, checked);
+					multiChoiceModeListenerDelegate.onItemCheckedStateChanged(
+							mode, position, id, checked);
 				}
 			}
 		};
 	}
+
 	@Override
 	public boolean performItemClick(View view, int position, long id) {
 		OnItemClickListener listener = getOnItemClickListener();
@@ -638,9 +638,9 @@ public class XStickyListHeadersView extends XListView implements
 
 	@Override
 	public Object getItemAtPosition(int position) {
-		if(isCalledFromSuper()){
+		if (isCalledFromSuper()) {
 			return super.getItemAtPosition(position);
-		}else{
+		} else {
 			return (adapter == null || position < 0) ? null : adapter.delegate
 					.getItem(position);
 		}
@@ -648,30 +648,35 @@ public class XStickyListHeadersView extends XListView implements
 
 	@Override
 	public long getItemIdAtPosition(int position) {
-		if(isCalledFromSuper()){
+		if (isCalledFromSuper()) {
 			return super.getItemIdAtPosition(position);
-		}else{
+		} else {
 			return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
 					: adapter.delegate.getItemId(position);
 		}
 	}
-	
+
 	@Override
 	protected ContextMenuInfo getContextMenuInfo() {
-		AdapterContextMenuInfo info = (android.widget.AdapterView.AdapterContextMenuInfo) super.getContextMenuInfo();
-		info.position = adapter.translateListViewPosition(info.position - getHeaderViewsCount());
+		AdapterContextMenuInfo info = (android.widget.AdapterView.AdapterContextMenuInfo) super
+				.getContextMenuInfo();
+		info.position = adapter.translateListViewPosition(info.position
+				- getHeaderViewsCount());
 		info.position += getHeaderViewsCount();
 		return info;
 	}
 
 	private boolean isCalledFromSuper() {
 		// i feel dirty...
-	    // could not think if better way, need to translate positions when not
-	    // called from super
-	    StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
-	    return callingFrame.getClassName().contains("android.widget.AbsListView") || 
-	           callingFrame.getClassName().contains("android.widget.ListView") ||
-	           callingFrame.getClassName().contains("android.widget.FastScroller");
+		// could not think if better way, need to translate positions when not
+		// called from super
+		StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
+		return callingFrame.getClassName().contains(
+				"android.widget.AbsListView")
+				|| callingFrame.getClassName().contains(
+						"android.widget.ListView")
+				|| callingFrame.getClassName().contains(
+						"android.widget.FastScroller");
 	}
 
 	@Override
@@ -698,7 +703,7 @@ public class XStickyListHeadersView extends XListView implements
 	@Override
 	public void setSelectionFromTop(int position, int offset) {
 		if (!isCalledFromSuper()) {
-			if(adapter == null){
+			if (adapter == null) {
 				positionToSetWhenAdapterIsReady = position;
 				offsetToSetWhenAdapterIsReady = offset;
 				return;
@@ -712,33 +717,33 @@ public class XStickyListHeadersView extends XListView implements
 		}
 		super.setSelectionFromTop(position, offset);
 	}
-	
+
 	@Override
 	public void setSelection(int position) {
 		setSelectionFromTop(position, 0);
 	}
-	
+
 	@Override
 	public void smoothScrollToPosition(int position) {
 		smoothScrollToPositionFromTop(position, 0);
 	}
-	
+
 	@Override
 	public void smoothScrollToPosition(int position, int boundPosition) {
-		//skipping bound position for now as is does not allow an offset
+		// skipping bound position for now as is does not allow an offset
 		smoothScrollToPositionFromTop(position, 0);
 	}
-	
+
 	@Override
 	public void smoothScrollToPositionFromTop(int position, int offset) {
 		smoothScrollToPositionFromTop(position, offset, 500);
 	}
-	
+
 	@Override
 	public void smoothScrollToPositionFromTop(int position, int offset,
 			int duration) {
 		if (!isCalledFromSuper()) {
-			if(adapter == null){
+			if (adapter == null) {
 				positionToSetWhenAdapterIsReady = position;
 				offsetToSetWhenAdapterIsReady = offset;
 				return;
@@ -752,19 +757,21 @@ public class XStickyListHeadersView extends XListView implements
 		}
 		super.smoothScrollToPositionFromTop(position, offset, duration);
 	}
-	
+
 	@Override
 	public int getFirstVisiblePosition() {
 		if (adapter != null && !isCalledFromSuper()) {
-			return adapter.translateAdapterPosition(super.getFirstVisiblePosition());
+			return adapter.translateAdapterPosition(super
+					.getFirstVisiblePosition());
 		}
 		return super.getFirstVisiblePosition();
 	}
-	
+
 	@Override
 	public int getLastVisiblePosition() {
 		if (adapter != null && !isCalledFromSuper()) {
-			return adapter.translateAdapterPosition(super.getLastVisiblePosition());
+			return adapter.translateAdapterPosition(super
+					.getLastVisiblePosition());
 		}
 		return super.getLastVisiblePosition();
 	}
@@ -772,7 +779,8 @@ public class XStickyListHeadersView extends XListView implements
 	@Override
 	public int getCheckedItemPosition() {
 		int position = super.getCheckedItemPosition();
-		if (adapter != null && !isCalledFromSuper() && position != ListView.INVALID_POSITION) {
+		if (adapter != null && !isCalledFromSuper()
+				&& position != ListView.INVALID_POSITION) {
 			position = adapter.translateAdapterPosition(position);
 		}
 		return position;
@@ -781,10 +789,13 @@ public class XStickyListHeadersView extends XListView implements
 	@Override
 	public SparseBooleanArray getCheckedItemPositions() {
 		SparseBooleanArray superCheckeditems = super.getCheckedItemPositions();
-		if (adapter != null && !isCalledFromSuper() && superCheckeditems != null) {
-			SparseBooleanArray checkeditems = new SparseBooleanArray(superCheckeditems.size());
-			for(int i = 0 ; i<superCheckeditems.size() ; i++){
-				int key = adapter.translateListViewPosition(superCheckeditems.keyAt(i));
+		if (adapter != null && !isCalledFromSuper()
+				&& superCheckeditems != null) {
+			SparseBooleanArray checkeditems = new SparseBooleanArray(
+					superCheckeditems.size());
+			for (int i = 0; i < superCheckeditems.size(); i++) {
+				int key = adapter.translateListViewPosition(superCheckeditems
+						.keyAt(i));
 				boolean value = superCheckeditems.valueAt(i);
 				checkeditems.put(key, value);
 			}
@@ -802,9 +813,10 @@ public class XStickyListHeadersView extends XListView implements
 			super.setMultiChoiceModeListener(multiChoiceModeListenerWrapper);
 		}
 	}
-	
+
 	protected void updateStickyListHeaderHeight(float delta) {
-		Log.d("xlistview", "getVisiableHeight --> " + mHeaderView.getVisiableHeight());
+		Log.d("xlistview",
+				"getVisiableHeight --> " + mHeaderView.getVisiableHeight());
 		mHeaderView.setVisiableHeight((int) delta
 				+ mHeaderView.getVisiableHeight());
 		if (mEnablePullRefresh && !mPullRefreshing) { // 未处于刷新状态，更新箭头
@@ -814,11 +826,13 @@ public class XStickyListHeadersView extends XListView implements
 				mHeaderView.setState(XListViewHeader.STATE_NORMAL);
 			}
 		}
-		//-1 才是header
+		// -1 才是header
 		setSelection(-1);
 	}
-	
-	/* 需要重写
+
+	/*
+	 * 需要重写
+	 * 
 	 * @see me.maxwin.view.XListView#onTouchEvent(android.view.MotionEvent)
 	 */
 	@Override
@@ -832,14 +846,15 @@ public class XStickyListHeadersView extends XListView implements
 			mLastY = ev.getRawY();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			final float deltaY = ev.getRawY() - mLastY ;
+			final float deltaY = ev.getRawY() - mLastY;
 			mLastY = ev.getRawY();
-			
+
 			if (getFirstVisiblePosition() == 1
 					&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)) {
 				// the first item is showing, header has shown or pull down.
-				Log.d("xlistview", "getFirstVisiblePosition()-->" + getFirstVisiblePosition()+
-						"getVisiableHeight()" + mHeaderView.getVisiableHeight()+"deltaY->" + deltaY );
+				Log.d("xlistview", "getFirstVisiblePosition()-->"
+						+ getFirstVisiblePosition() + "getVisiableHeight()"
+						+ mHeaderView.getVisiableHeight() + "deltaY->" + deltaY);
 				updateStickyListHeaderHeight(deltaY / OFFSET_RADIO);
 				invokeOnScrolling();
 			} else if (getLastVisiblePosition() == mTotalItemCount - 1
@@ -852,27 +867,16 @@ public class XStickyListHeadersView extends XListView implements
 			mLastY = -1; // reset
 			if (getFirstVisiblePosition() == 1) {
 				// invoke refresh
-				if (mEnablePullRefresh
-						&& mHeaderView.getVisiableHeight() > mHeaderViewHeight) {
-					mPullRefreshing = true;
-					mHeaderView.setState(XListViewHeader.STATE_REFRESHING);
-					if (mListViewListener != null) {
-						mListViewListener.onRefresh();
-					}
-				}
+				startOnRefresh();
 				resetHeaderHeight();
 			} else if (getLastVisiblePosition() == mTotalItemCount - 1) {
 				// invoke load more.
-				if (mEnablePullLoad
-						&& mFooterView.getBottomMargin() > PULL_LOAD_MORE_DELTA) {
-					startLoadMore();
-				}
+				startLoadMore();
 				resetFooterHeight();
 			}
 			break;
 		}
 		return super.onTouchEvent(ev);
 	}
-	
 
 }

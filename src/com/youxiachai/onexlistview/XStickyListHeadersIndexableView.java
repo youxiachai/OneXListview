@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.youxiachai.xlistview;
+package com.youxiachai.onexlistview;
 
-import me.maxwin.view.XListView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
@@ -26,21 +25,21 @@ import android.widget.ListAdapter;
 
 import com.woozzu.android.widget.IndexScroller;
 
-public class XIndexableView extends XListView {
+public class XStickyListHeadersIndexableView extends XStickyListHeadersView {
 	
 	private boolean mIsFastScrollEnabled = false;
 	private IndexScroller mScroller = null;
 	private GestureDetector mGestureDetector = null;
 
-	public XIndexableView(Context context) {
+	public XStickyListHeadersIndexableView(Context context) {
 		super(context);
 	}
 
-	public XIndexableView(Context context, AttributeSet attrs) {
+	public XStickyListHeadersIndexableView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public XIndexableView(Context context, AttributeSet attrs, int defStyle) {
+	public XStickyListHeadersIndexableView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 

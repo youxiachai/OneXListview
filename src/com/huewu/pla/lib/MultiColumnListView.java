@@ -499,6 +499,9 @@ public class MultiColumnListView extends PLA_ListView {
 	};
 	OnLoadMoreListener loadMoreListener;
 
+	/** it is prepare item loadmore default 2
+	 * @param listener
+	 */
 	public void setOnLoadMoreListener(OnLoadMoreListener listener) {
 
 		if (listener != null) {
