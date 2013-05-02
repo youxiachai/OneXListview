@@ -25,21 +25,21 @@ import android.widget.ListAdapter;
 
 import com.woozzu.android.widget.IndexScroller;
 
-public class XListViewStickyIndexable extends XListViewStickyListHeaders {
+public class XStickyListHeadersIndexableView extends XStickyListHeadersView {
 	
 	private boolean mIsFastScrollEnabled = false;
 	private IndexScroller mScroller = null;
 	private GestureDetector mGestureDetector = null;
 
-	public XListViewStickyIndexable(Context context) {
+	public XStickyListHeadersIndexableView(Context context) {
 		super(context);
 	}
 
-	public XListViewStickyIndexable(Context context, AttributeSet attrs) {
+	public XStickyListHeadersIndexableView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public XListViewStickyIndexable(Context context, AttributeSet attrs, int defStyle) {
+	public XStickyListHeadersIndexableView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 

@@ -26,21 +26,21 @@ import android.widget.ListAdapter;
 
 import com.woozzu.android.widget.IndexScroller;
 
-public class XListViewIndexable extends XListView {
+public class XIndexableView extends XListView {
 	
 	private boolean mIsFastScrollEnabled = false;
 	private IndexScroller mScroller = null;
 	private GestureDetector mGestureDetector = null;
 
-	public XListViewIndexable(Context context) {
+	public XIndexableView(Context context) {
 		super(context);
 	}
 
-	public XListViewIndexable(Context context, AttributeSet attrs) {
+	public XIndexableView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public XListViewIndexable(Context context, AttributeSet attrs, int defStyle) {
+	public XIndexableView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 

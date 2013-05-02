@@ -39,7 +39,7 @@ import android.widget.SectionIndexer;
  * @author Emil Sjölander
  */
 @SuppressLint("NewApi")
-public class XListViewStickyListHeaders extends XListView implements
+public class XStickyListHeadersView extends XListView implements
 		OnScrollListener, OnClickListener {
 
 
@@ -92,15 +92,15 @@ public class XListViewStickyListHeaders extends XListView implements
 	};
 	private MultiChoiceModeListener multiChoiceModeListenerWrapper;
 
-	public XListViewStickyListHeaders(Context context) {
+	public XStickyListHeadersView(Context context) {
 		this(context, null);
 	}
 
-	public XListViewStickyListHeaders(Context context, AttributeSet attrs) {
+	public XStickyListHeadersView(Context context, AttributeSet attrs) {
 		this(context, attrs, android.R.attr.listViewStyle);
 	}
 
-	public XListViewStickyListHeaders(Context context, AttributeSet attrs,
+	public XStickyListHeadersView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
 		super.setOnScrollListener(this);
@@ -303,7 +303,7 @@ public class XListViewStickyListHeaders extends XListView implements
 
 				@Override
 				public void run() {
-					scrollChanged(XListViewStickyListHeaders.super.getFirstVisiblePosition());
+					scrollChanged(XStickyListHeadersView.super.getFirstVisiblePosition());
 				}
 			});
 		}

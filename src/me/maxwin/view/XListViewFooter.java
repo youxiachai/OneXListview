@@ -6,7 +6,7 @@
  */
 package me.maxwin.view;
 
-import me.maxwin.R;
+import com.youxiachai.onexlistview.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
