@@ -26,6 +26,10 @@ import android.widget.ListAdapter;
 
 import com.woozzu.android.widget.IndexScroller;
 
+/**
+ * @author youxiachai
+ * @date 2013/5/11
+ */
 public class XIndexableView extends XListView {
 	
 	private boolean mIsFastScrollEnabled = false;

@@ -25,6 +25,10 @@ import android.widget.ListAdapter;
 
 import com.woozzu.android.widget.IndexScroller;
 
+/**
+ * @author youxiachai
+ * @date 2013/5/11
+ */
 public class XStickyListHeadersIndexableView extends XStickyListHeadersView {
 	
 	private boolean mIsFastScrollEnabled = false;
@@ -84,7 +88,9 @@ public class XStickyListHeadersIndexableView extends XStickyListHeadersView {
 				public boolean onFling(MotionEvent e1, MotionEvent e2,
 						float velocityX, float velocityY) {
 					// If fling happens, index bar shows
-					mScroller.show();
+					if(mScroller != null){
+						mScroller.show();
+					}
 					return super.onFling(e1, e2, velocityX, velocityY);
 				}
 				

@@ -35,7 +35,9 @@ public class XListView extends ListView implements OnScrollListener {
 	protected OnScrollListener mScrollListener; // user's scroll listener
 
 	// the interface to trigger refresh and load more.
-	protected IXListViewListener mListViewListener;
+
+	protected IXListViewLoadMore mLoadMore;
+	protected IXListViewRefreshListener mOnRefresh;
 
 	// -- header view
 	protected XListViewHeader mHeaderView;
@@ -116,8 +118,8 @@ public class XListView extends ListView implements OnScrollListener {
 					}
 				});
 		// 补充修改
-		setPullRefreshEnable(mEnablePullRefresh);
-		setPullLoadEnable(mEnablePullLoad);
+		disablePullLoad();
+		disablePullRefreash();
 	}
 
 	@Override
@@ -126,10 +128,13 @@ public class XListView extends ListView implements OnScrollListener {
 		// make sure XListViewFooter is the last footer view, and only add once.
 		if (mIsFooterReady == false) {
 			// if not inflate screen ,footerview not add
-			if (getLastVisiblePosition() != (getAdapter().getCount() - 1)) {
-				mIsFooterReady = true;
-				addFooterView(mFooterView);
+			if(getAdapter() != null){
+				if (getLastVisiblePosition() != (getAdapter().getCount() - 1)) {
+					mIsFooterReady = true;
+					addFooterView(mFooterView);
+				}
 			}
+		
 		}
 	}
 
@@ -144,13 +149,17 @@ public class XListView extends ListView implements OnScrollListener {
 	 * 
 	 * @param enable
 	 */
-	public void setPullRefreshEnable(boolean enable) {
-		mEnablePullRefresh = enable;
-		if (!mEnablePullRefresh) { // disable, hide the content
-			mHeaderViewContent.setVisibility(View.INVISIBLE);
-		} else {
-			mHeaderViewContent.setVisibility(View.VISIBLE);
-		}
+	public void setPullRefreshEnable(IXListViewRefreshListener refreshListener) {
+		mEnablePullRefresh = true;
+		mHeaderViewContent.setVisibility(View.VISIBLE);
+		this.mOnRefresh = refreshListener;
+
+	}
+
+	public void disablePullRefreash() {
+		mEnablePullRefresh = false;
+		// disable, hide the content
+		mHeaderViewContent.setVisibility(View.INVISIBLE);
 	}
 
 	/**
@@ -158,23 +167,26 @@ public class XListView extends ListView implements OnScrollListener {
 	 * 
 	 * @param enable
 	 */
-	public void setPullLoadEnable(boolean enable) {
-		mEnablePullLoad = enable;
-		if (!mEnablePullLoad) {
-			mFooterView.hide();
-			mFooterView.setOnClickListener(null);
-		} else {
-			mPullLoading = false;
-			mFooterView.show();
-			mFooterView.setState(XListViewFooter.STATE_NORMAL);
-			// both "pull up" and "click" will invoke load more.
-			mFooterView.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					startLoadMore();
-				}
-			});
-		}
+	public void setPullLoadEnable(IXListViewLoadMore loadMoreListener) {
+		mEnablePullLoad = true;
+		this.mLoadMore = loadMoreListener;
+		mPullLoading = false;
+		mFooterView.show();
+		mFooterView.setState(XListViewFooter.STATE_NORMAL);
+		// both "pull up" and "click" will invoke load more.
+		mFooterView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startLoadMore();
+			}
+		});
+
+	}
+
+	public void disablePullLoad() {
+		mEnablePullLoad = false;
+		mFooterView.hide();
+		mFooterView.setOnClickListener(null);
 	}
 
 	/**
@@ -207,8 +219,8 @@ public class XListView extends ListView implements OnScrollListener {
 	}
 
 	protected void invokeOnScrolling() {
-		if (mScrollListener instanceof OnXScrollListener) {
-			OnXScrollListener l = (OnXScrollListener) mScrollListener;
+		if (mScrollListener instanceof IXScrollListener) {
+			IXScrollListener l = (IXScrollListener) mScrollListener;
 			l.onXScrolling(this);
 		}
 	}
@@ -223,7 +235,9 @@ public class XListView extends ListView implements OnScrollListener {
 				mHeaderView.setState(XListViewHeader.STATE_NORMAL);
 			}
 		}
-		setSelection(0); // scroll to top each time
+			setSelection(0); // scroll to top each time
+		
+		
 	}
 
 	/**
@@ -302,52 +316,58 @@ public class XListView extends ListView implements OnScrollListener {
 				&& !mPullLoading) {
 			mPullLoading = true;
 			mFooterView.setState(XListViewFooter.STATE_LOADING);
-			if (mListViewListener != null) {
-				mListViewListener.onLoadMore();
+			if (mLoadMore != null) {
+				mLoadMore.onLoadMore();
 			}
 		}
 	}
+	
+	public boolean isChrid = false;
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		if (mLastY == -1) {
-			mLastY = ev.getRawY();
-		}
+		
+		if(!isChrid){
+			if (mLastY == -1) {
+				mLastY = ev.getRawY();
+			}
 
-		switch (ev.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			mLastY = ev.getRawY();
-			break;
-		case MotionEvent.ACTION_MOVE:
-			final float deltaY = ev.getRawY() - mLastY;
-			mLastY = ev.getRawY();
-			Log.d("xlistview", "getFirstVisiblePosition()-->"
-					+ getFirstVisiblePosition() + "getVisiableHeight()"
-					+ mHeaderView.getVisiableHeight() + "deltaY->" + deltaY);
-			if (getFirstVisiblePosition() == 0
-					&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0) && !mPullRefreshing) {
-				// the first item is showing, header has shown or pull down.
-				updateHeaderHeight(deltaY / OFFSET_RADIO);
-				invokeOnScrolling();
-			} else if (getLastVisiblePosition() == mTotalItemCount - 1
-					&& (mFooterView.getBottomMargin() > 0 || deltaY < 0) && !mPullLoading) {
-				// last item, already pulled up or want to pull up.
-				updateFooterHeight(-deltaY / OFFSET_RADIO);
+			switch (ev.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				mLastY = ev.getRawY();
+				break;
+			case MotionEvent.ACTION_MOVE:
+				final float deltaY = ev.getRawY() - mLastY;
+				mLastY = ev.getRawY();
+				Log.d("xlistview", "xlistView-height");
+				if (getFirstVisiblePosition() == 0
+						&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)
+						&& !mPullRefreshing) {
+					// the first item is showing, header has shown or pull down.
+					updateHeaderHeight(deltaY / OFFSET_RADIO);
+					invokeOnScrolling();
+				} else if (getLastVisiblePosition() == mTotalItemCount - 1
+						&& (mFooterView.getBottomMargin() > 0 || deltaY < 0)
+						&& !mPullLoading) {
+					// last item, already pulled up or want to pull up.
+					updateFooterHeight(-deltaY / OFFSET_RADIO);
+				}
+				break;
+			default:
+				mLastY = -1; // reset
+				if (getFirstVisiblePosition() == 0) {
+					// invoke refresh
+					startOnRefresh();
+					resetHeaderHeight();
+				} else if (getLastVisiblePosition() == mTotalItemCount - 1) {
+					// invoke load more.
+					startLoadMore();
+					resetFooterHeight();
+				}
+				break;
 			}
-			break;
-		default:
-			mLastY = -1; // reset
-			if (getFirstVisiblePosition() == 0) {
-				// invoke refresh
-				startOnRefresh();
-				resetHeaderHeight();
-			} else if (getLastVisiblePosition() == mTotalItemCount - 1) {
-				// invoke load more.
-				startLoadMore();
-				resetFooterHeight();
-			}
-			break;
 		}
+		
 		return super.onTouchEvent(ev);
 	}
 
@@ -357,8 +377,8 @@ public class XListView extends ListView implements OnScrollListener {
 				&& !mPullRefreshing) {
 			mPullRefreshing = true;
 			mHeaderView.setState(XListViewHeader.STATE_REFRESHING);
-			if (mListViewListener != null) {
-				mListViewListener.onRefresh();
+			if (mOnRefresh != null) {
+				mOnRefresh.onRefresh();
 			}
 		}
 	}
@@ -400,7 +420,4 @@ public class XListView extends ListView implements OnScrollListener {
 		}
 	}
 
-	public void setXListViewListener(IXListViewListener l) {
-		mListViewListener = l;
-	}
 }
