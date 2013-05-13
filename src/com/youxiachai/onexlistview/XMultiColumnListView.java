@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.RelativeLayout;
@@ -21,7 +20,7 @@ import com.huewu.pla.lib.MultiColumnListView;
 import com.huewu.pla.lib.internal.PLA_AbsListView;
 import com.huewu.pla.lib.internal.PLA_AbsListView.OnScrollListener;
 
-/**TODO 记得补充相关的监听器
+/**
  * @author youxiachai
  * @date 2013-5-3
  */
@@ -83,7 +82,7 @@ public class XMultiColumnListView extends MultiColumnListView implements
 		initWithContext(context);
 	}
 
-	private void initWithContext(Context context) {
+	protected void initWithContext(Context context) {
 		mScroller = new Scroller(context, new DecelerateInterpolator());
 		// XListView need the scroll event, and it will dispatch the event to
 		// user's listener (as a proxy).
@@ -110,7 +109,9 @@ public class XMultiColumnListView extends MultiColumnListView implements
 								.removeGlobalOnLayoutListener(this);
 					}
 				});
-		// 补充修改
+		// 默认关闭所有操作
+		disablePullLoad();
+		disablePullRefreash();
 		// setPullRefreshEnable(mEnablePullRefresh);
 		// setPullLoadEnable(mEnablePullLoad);
 	}
@@ -269,9 +270,10 @@ public class XMultiColumnListView extends MultiColumnListView implements
 	/**
 	 * stop refresh, reset header view.
 	 */
-	public void stopRefresh() {
+	public void stopRefresh(String time) {
 		if (mPullRefreshing == true) {
 			mPullRefreshing = false;
+			mHeaderTimeView.setText(time);
 			resetHeaderHeight();
 		}
 	}
@@ -319,13 +321,16 @@ public class XMultiColumnListView extends MultiColumnListView implements
 			if (getFirstVisiblePosition() == 0
 					&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)  && !mPullRefreshing) {
 				// the first item is showing, header has shown or pull down.
-				
+				if(mEnablePullRefresh){
 				updateHeaderHeight(deltaY / OFFSET_RADIO);
 				invokeOnScrolling();
+				}
 			} else if (getLastVisiblePosition() == mTotalItemCount - 1
 					&& (mFooterView.getBottomMargin() > 0 || deltaY < 0)  && !mPullLoading) {
 				// last item, already pulled up or want to pull up.
-				updateFooterHeight(-deltaY / OFFSET_RADIO);
+				if(mEnablePullLoad){
+					updateFooterHeight(-deltaY / OFFSET_RADIO);
+				}
 			}
 			break;
 		default:

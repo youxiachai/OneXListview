@@ -1,8 +1,8 @@
 /**
  * @file XListView.java
  * @package me.maxwin.view
- * @create Mar 18, 2012 6:28:41 PM
- * @author Maxwin
+ * @create 2013/5/13
+ * @author youxiachai
  * @description An ListView support (a) Pull down to refresh, (b) Pull up to load more.
  * 		Implement IXListViewListener, and see stopRefresh() / stopLoadMore().
  * 
@@ -192,9 +192,10 @@ public class XListView extends ListView implements OnScrollListener {
 	/**
 	 * stop refresh, reset header view.
 	 */
-	public void stopRefresh() {
+	public void stopRefresh(String time) {
 		if (mPullRefreshing == true) {
 			mPullRefreshing = false;
+			mHeaderTimeView.setText(time);
 			resetHeaderHeight();
 		}
 	}
@@ -215,7 +216,7 @@ public class XListView extends ListView implements OnScrollListener {
 	 * @param time
 	 */
 	public void setRefreshTime(String time) {
-		mHeaderTimeView.setText(time);
+		
 	}
 
 	protected void invokeOnScrolling() {
@@ -322,12 +323,10 @@ public class XListView extends ListView implements OnScrollListener {
 		}
 	}
 	
-	public boolean isChrid = false;
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		
-		if(!isChrid){
 			if (mLastY == -1) {
 				mLastY = ev.getRawY();
 			}
@@ -340,17 +339,23 @@ public class XListView extends ListView implements OnScrollListener {
 				final float deltaY = ev.getRawY() - mLastY;
 				mLastY = ev.getRawY();
 				Log.d("xlistview", "xlistView-height");
+				
 				if (getFirstVisiblePosition() == 0
 						&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)
 						&& !mPullRefreshing) {
 					// the first item is showing, header has shown or pull down.
-					updateHeaderHeight(deltaY / OFFSET_RADIO);
-					invokeOnScrolling();
+					if(mEnablePullRefresh){
+						updateHeaderHeight(deltaY / OFFSET_RADIO);
+						invokeOnScrolling();
+					}
+					
 				} else if (getLastVisiblePosition() == mTotalItemCount - 1
 						&& (mFooterView.getBottomMargin() > 0 || deltaY < 0)
 						&& !mPullLoading) {
 					// last item, already pulled up or want to pull up.
-					updateFooterHeight(-deltaY / OFFSET_RADIO);
+					if(mEnablePullLoad){
+						updateFooterHeight(-deltaY / OFFSET_RADIO);
+					}
 				}
 				break;
 			default:
@@ -366,7 +371,6 @@ public class XListView extends ListView implements OnScrollListener {
 				}
 				break;
 			}
-		}
 		
 		return super.onTouchEvent(ev);
 	}

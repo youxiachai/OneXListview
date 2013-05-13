@@ -1,12 +1,17 @@
-title: android OneXlistview 1.0.0 说明
-date: 2013-05-03
-tags: android
----
+#android OneXlistview 1.1.0 说明#
+
 
 ##changelog##
+2013-05-13
+bugfix: XMultiColumnListView pull listener
+improve: xListview stoprefresh methond
+
 2013-05-12
+
 update sticklistview
+
 many bug fix xListview
+
 improve xlistview refresh loadmore listener
 
 ##原始组件说明##
