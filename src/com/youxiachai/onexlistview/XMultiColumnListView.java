@@ -6,12 +6,14 @@ import me.maxwin.view.IXScrollListener;
 import me.maxwin.view.XListViewFooter;
 import me.maxwin.view.XListViewHeader;
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
@@ -116,7 +118,7 @@ public class XMultiColumnListView extends MultiColumnListView implements
 		// setPullLoadEnable(mEnablePullLoad);
 	}
 
-	protected void updateHeaderHeight(float delta) {
+	public void updateHeaderHeight(float delta) {
 		mHeaderView.setVisiableHeight((int) delta
 				+ mHeaderView.getVisiableHeight());
 		if (mEnablePullRefresh && !mPullRefreshing) { // 未处于刷新状态，更新箭头
@@ -192,7 +194,7 @@ public class XMultiColumnListView extends MultiColumnListView implements
 	/**
 	 * reset header view's height.
 	 */
-	protected void resetHeaderHeight() {
+	public void resetHeaderHeight() {
 		int height = mHeaderView.getVisiableHeight();
 		if (height == 0) // not visible.
 			return;
@@ -211,6 +213,28 @@ public class XMultiColumnListView extends MultiColumnListView implements
 				SCROLL_DURATION);
 		// trigger computeScroll
 		invalidate();
+	}
+	
+	/* 
+	 * 神奇的bug....
+	 */
+	@Override
+	public void setAdapter(ListAdapter adapter) {
+		super.setAdapter(adapter);
+		
+		//莫名其妙的bug....
+		//updateHeaderHeight(10);
+		postDelayed(new Runnable() {
+			@Override
+			public void run() {
+			//	resetHeaderHeight();
+				mScroller.startScroll(0, 0, 0, 0,
+						SCROLL_DURATION);
+//				// trigger computeScroll
+				invalidate();
+			}
+		}, 100);
+		
 	}
 
 	/**
