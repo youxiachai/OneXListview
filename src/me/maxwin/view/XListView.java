@@ -13,6 +13,7 @@
 package me.maxwin.view;
 
 import com.youxiachai.onexlistview.R;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -71,7 +72,9 @@ public class XListView extends ListView implements OnScrollListener {
 															// load more.
 	protected final static float OFFSET_RADIO = 1.8f; // support iOS like pull
 														// feature.
-
+	//support perload
+	private int preloadCount = 0;
+	
 	/**
 	 * @param context
 	 */
@@ -143,6 +146,10 @@ public class XListView extends ListView implements OnScrollListener {
 		super.setAdapter(adapter);
 
 	}
+	
+	public void setPreLoadCount(int count){
+		this.preloadCount = count;
+	}
 
 	/**
 	 * enable or disable pull down refresh feature.
@@ -177,7 +184,12 @@ public class XListView extends ListView implements OnScrollListener {
 		mFooterView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startLoadMore();
+//				startLoadMore();
+				mPullLoading = true;
+				mFooterView.setState(XListViewFooter.STATE_LOADING);
+				if (mLoadMore != null) {
+					mLoadMore.onLoadMore();
+				}
 			}
 		});
 
@@ -348,7 +360,7 @@ public class XListView extends ListView implements OnScrollListener {
 			case MotionEvent.ACTION_MOVE:
 				final float deltaY = ev.getRawY() - mLastY;
 				mLastY = ev.getRawY();
-				Log.d("xlistview", "xlistView-height");
+				Log.d("xlistview", "onTouchEvent "+" LastVisiblePosition " + getLastVisiblePosition() + " mTotalItemCount " + mTotalItemCount);
 				
 				if (getFirstVisiblePosition() == 0
 						&& (mHeaderView.getVisiableHeight() > 0 || deltaY > 0)
@@ -366,6 +378,16 @@ public class XListView extends ListView implements OnScrollListener {
 					if(mEnablePullLoad){
 						updateFooterHeight(-deltaY / OFFSET_RADIO);
 					}
+				} else if(preloadCount != 0){
+					
+					if(mEnablePullLoad && !mPullLoading && getLastVisiblePosition() >= mTotalItemCount - preloadCount){
+						mPullLoading = true;
+						mFooterView.setState(XListViewFooter.STATE_LOADING);
+						if (mLoadMore != null) {
+							mLoadMore.onLoadMore();
+						}
+					}
+					
 				}
 				break;
 			default:
@@ -427,6 +449,7 @@ public class XListView extends ListView implements OnScrollListener {
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
 		// send to user's listener
+		Log.d("xlistview", "onScroll firstVisibleItem " + firstVisibleItem + " visibleItemCount " + visibleItemCount + " totalItemCount " + totalItemCount);
 		mTotalItemCount = totalItemCount;
 		if (mScrollListener != null) {
 			mScrollListener.onScroll(view, firstVisibleItem, visibleItemCount,
